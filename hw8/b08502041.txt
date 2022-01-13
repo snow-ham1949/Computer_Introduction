@@ -12,17 +12,22 @@ WHERE C.Name NOT IN (
         AND P.Affiliation = "empire"
 );
 
-4. SELECT C.Name, C.Homeworld, COUNT(T.Planet_Name)
+4. SELECT C.Name, COUNT(T.Planet_Name)
 FROM Characters C
 LEFT JOIN TimeTable T
     ON C.Name = T.Character_Name
 AND T.Planet_Name = C.Homeworld
-GROUP BY C.Name, C.Homeworld;
+GROUP BY C.Name;
 
-5. SELECT DISTINCT T1.Movie, T2.Character_Name 
-FROM ( SELECT X.Movie, MAX(X.CNT) as MAXCNT FROM 
-(SELECT T1.Character_Name, T1.Movie, COUNT(T1.Planet_Name) as CNT 
-FROM TimeTable T1 GROUP BY T1.Character_Name, T1.Movie) X GROUP BY X.Movie) T1, 
-(SELECT T.Character_Name, T.Movie, COUNT(T.Planet_Name) as CNT 
-FROM TimeTable T GROUP BY T.Character_Name, T.Movie) T2 
-WHERE T1.Movie = T2.Movie AND T1.MAXCNT = T2.CNT;
+5. SELECT T_2.Movie, T_2.Character_Name 
+FROM ( 
+        SELECT A.Movie, MAX(count) as Count 
+        FROM ( 
+                SELECT T.Movie, COUNT(T.Character_Name) count 
+                FROM TimeTable T
+                GROUP BY T.Movie, T.Character_Name) A 
+        GROUP BY A.Movie) T_1, 
+        ( 
+            SELECT T.Movie, T.Character_Name, COUNT(T.Character_Name) count 
+            FROM TimeTable T GROUP BY T.Movie, T.Character_Name) T_2 
+WHERE T_1.Movie = T_2.Movie AND T_1.Count = T_2.count;
